@@ -4,37 +4,34 @@ using System.Collections;
 public class PlayerController : MonoBehaviour
 {
 
-    // public variables
     public float speed = 3.0f;
-    //public float gravity = 9.81f;
+    public float touchSpeed = 0.1f;
 
-    private CharacterController characterController;
-    private Rigidbody rigidbody;
-    private Vector3 positionYZ;
-
-    void Start()
-    {
-        characterController = gameObject.GetComponent<CharacterController>();
-        rigidbody = gameObject.GetComponent<Rigidbody>();
-    }
-
-    void Update()
+    void FixedUpdate()
     {
         
-        Vector3 movementX = Input.GetAxis("Horizontal") * Vector3.right * speed * Time.deltaTime;
-        
-        Vector3 movement = transform.TransformDirection(movementX);
-
-        
-        Debug.Log("Movement Vector = " + movement);
-
+        //keyboard controls
         var x = Input.GetAxis("Horizontal") * speed * Time.deltaTime;
-        if (x > -3 && x < 3)
+        transform.Translate(0.0f, -x, 0.0f);
+
+        //touch controls
+        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Stationary)
         {
-            transform.Translate(x, 0.0f, 0.0f);
+            Vector2 touchPosition = Input.GetTouch(0).position;
+            double halfScreen = Screen.width / 2.0;
+
+            if (touchPosition.x < halfScreen)
+            {
+                transform.Translate(0.0f, touchSpeed, 0.0f);
+                //transform.Translate(Vector3.left * speed * Time.deltaTime);
+            }
+            else if (touchPosition.x > halfScreen)
+            {
+                transform.Translate(0.0f, -touchSpeed, 0.0f);
+                //transform.Translate(Vector3.right * speed * Time.deltaTime);
+            }
+
         }
-        // Actually move the character controller in the movement direction
-        //rigidbody.MovePosition(transform.position + movement);
-        //transform.position.Set(transform.position.x, 0.0f, 0.0f);
+
     }
 }
